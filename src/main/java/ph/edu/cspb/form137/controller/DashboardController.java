@@ -1,11 +1,14 @@
 package ph.edu.cspb.form137.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
+
+    private final Environment env;
+
+    public DashboardController(Environment env) {
+        this.env = env;
+    }
 
     @GetMapping(value = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> listRequests(@RequestHeader("Authorization") String auth) {
@@ -42,14 +51,43 @@ public class DashboardController {
         request.put("submittedDate", "2024-01-15T10:30:00Z");
         request.put("ticketNumber", "F137-2024-001");
 
+        List<Map<String, Object>> requests = new ArrayList<>();
+        requests.add(request);
+
+        if (env.acceptsProfiles(Profiles.of("dev"))) {
+            Map<String, Object> comment2 = new HashMap<>();
+            comment2.put("id", "comment_002");
+            comment2.put("message", "Your request is being processed");
+            comment2.put("registrarName", "Mr. Reyes");
+            comment2.put("requiresResponse", false);
+            comment2.put("timestamp", "2024-01-20T11:00:00Z");
+            comment2.put("type", "info");
+
+            Map<String, Object> request2 = new HashMap<>();
+            request2.put("comments", List.of(comment2));
+            request2.put("deliveryMethod", "email");
+            request2.put("estimatedCompletion", "2024-01-27T17:00:00Z");
+            request2.put("id", "req_002");
+            request2.put("learnerName", "Pedro Santos");
+            request2.put("learnerReferenceNumber", "987654321098");
+            request2.put("requestType", "Certified True Copy");
+            request2.put("requesterEmail", "pedro@email.com");
+            request2.put("requesterName", "Pedro Santos");
+            request2.put("status", "processing");
+            request2.put("submittedDate", "2024-01-20T10:00:00Z");
+            request2.put("ticketNumber", "F137-2024-002");
+
+            requests.add(request2);
+        }
+
         Map<String, Object> stats = new HashMap<>();
         stats.put("averageProcessingTime", 7);
         stats.put("completedRequests", 3);
         stats.put("pendingRequests", 2);
-        stats.put("totalRequests", 5);
+        stats.put("totalRequests", requests.size());
 
         Map<String, Object> body = new HashMap<>();
-        body.put("requests", List.of(request));
+        body.put("requests", requests);
         body.put("statistics", stats);
         return body;
     }
