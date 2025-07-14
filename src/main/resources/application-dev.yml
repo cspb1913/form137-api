@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      database: demo-dev   # logical DB name inside embedded server
+server:
+  port: 8080

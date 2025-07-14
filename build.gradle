@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.20.0' // ← embedded
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) {
+    group = 'application'
+    description = 'Run with the dev profile and embedded Mongo'
+    args '--spring.profiles.active=dev'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
