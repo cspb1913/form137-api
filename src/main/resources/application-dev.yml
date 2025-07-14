@@ -4,3 +4,8 @@ spring:
       database: demo-dev   # logical DB name inside embedded server
 server:
   port: 8080
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 7.0.5

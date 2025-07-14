@@ -33,6 +33,7 @@ tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) 
     description = 'Run with the dev profile and embedded Mongo'
     args '--spring.profiles.active=dev'
     classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'ph.edu.cspb.form137.Form137ApiApplication'
 }
 
 
