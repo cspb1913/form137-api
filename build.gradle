@@ -1,7 +1,8 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.3'
-	id 'io.spring.dependency-management' version '1.1.7'
+        id 'java'
+        id 'org.springframework.boot' version '3.5.3'
+        id 'io.spring.dependency-management' version '1.1.7'
+        id 'au.com.dius.pact' version '4.6.10'
 }
 
 group = 'com.example'
@@ -22,8 +23,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.20.0' // ← embedded
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.10'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) {
@@ -35,5 +37,20 @@ tasks.register('bootRunDev', org.springframework.boot.gradle.tasks.run.BootRun) 
 
 
 tasks.named('test') {
-	useJUnitPlatform()
+        useJUnitPlatform()
+}
+
+tasks.register('pactTest', Test) {
+    group = 'verification'
+    description = 'Runs Pact provider tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    include '**/pact/**'
+}
+
+tasks.register('pact') {
+    group = 'verification'
+    description = 'Alias for pactTest'
+    dependsOn 'pactTest'
 }
