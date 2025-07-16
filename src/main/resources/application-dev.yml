@@ -9,3 +9,5 @@ de:
     mongodb:
       embedded:
         version: 7.0.5
+auth:
+  enabled: false
