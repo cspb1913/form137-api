@@ -26,6 +26,12 @@ spec:
                   name: mongo-secret
                   key: MONGO_URI
             - name: SPRING_DATA_MONGODB_DATABASE
-              value: form137
+              valueFrom:
+                configMapKeyRef:
+                  name: form137-cm
+                  key: SPRING_DATA_MONGODB_DATABASE
             - name: AUTH0_ISSUER_URI
-              value: "https://jasoncalalang.auth0.com/"
+              valueFrom:
+                configMapKeyRef:
+                  name: form137-cm
+                  key: AUTH0_ISSUER_URI
