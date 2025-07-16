@@ -1,83 +1,53 @@
 package ph.edu.cspb.form137.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ph.edu.cspb.form137.model.Comment;
+import ph.edu.cspb.form137.model.Form137Request;
+import ph.edu.cspb.form137.repository.Form137RequestRepository;
+
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
-    private final Environment env;
+    private final Form137RequestRepository repository;
 
-    public DashboardController(Environment env) {
-        this.env = env;
+    public DashboardController(Form137RequestRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping(value = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> listRequests(@RequestHeader("Authorization") String auth) {
-        Map<String, Object> comment = new HashMap<>();
-        comment.put("id", "comment_001");
-        comment.put("message", "Your request has been received");
-        comment.put("registrarName", "Ms. Santos");
-        comment.put("requiresResponse", false);
-        comment.put("timestamp", "2024-01-15T10:35:00Z");
-        comment.put("type", "info");
-
-        Map<String, Object> request = new HashMap<>();
-        request.put("comments", List.of(comment));
-        request.put("deliveryMethod", "pickup");
-        request.put("estimatedCompletion", "2024-01-22T17:00:00Z");
-        request.put("id", "req_001");
-        request.put("learnerName", "Juan Dela Cruz");
-        request.put("learnerReferenceNumber", "123456789012");
-        request.put("requestType", "Original Copy");
-        request.put("requesterEmail", "maria@email.com");
-        request.put("requesterName", "Maria Dela Cruz");
-        request.put("status", "submitted");
-        request.put("submittedDate", "2024-01-15T10:30:00Z");
-        request.put("ticketNumber", "F137-2024-001");
-
-        List<Map<String, Object>> requests = new ArrayList<>();
-        requests.add(request);
-
-        if (env.acceptsProfiles(Profiles.of("dev"))) {
-            Map<String, Object> comment2 = new HashMap<>();
-            comment2.put("id", "comment_002");
-            comment2.put("message", "Your request is being processed");
-            comment2.put("registrarName", "Mr. Reyes");
-            comment2.put("requiresResponse", false);
-            comment2.put("timestamp", "2024-01-20T11:00:00Z");
-            comment2.put("type", "info");
-
-            Map<String, Object> request2 = new HashMap<>();
-            request2.put("comments", List.of(comment2));
-            request2.put("deliveryMethod", "email");
-            request2.put("estimatedCompletion", "2024-01-27T17:00:00Z");
-            request2.put("id", "req_002");
-            request2.put("learnerName", "Pedro Santos");
-            request2.put("learnerReferenceNumber", "987654321098");
-            request2.put("requestType", "Certified True Copy");
-            request2.put("requesterEmail", "pedro@email.com");
-            request2.put("requesterName", "Pedro Santos");
-            request2.put("status", "processing");
-            request2.put("submittedDate", "2024-01-20T10:00:00Z");
-            request2.put("ticketNumber", "F137-2024-002");
-
-            requests.add(request2);
+        List<Form137Request> all = repository.findAll();
+        List<Map<String, Object>> requests = new java.util.ArrayList<>();
+        for (Form137Request r : all) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("comments", r.getComments());
+            map.put("deliveryMethod", r.getDeliveryMethod());
+            map.put("estimatedCompletion", r.getEstimatedCompletion());
+            map.put("id", r.getId());
+            map.put("learnerName", r.getLearnerName());
+            map.put("learnerReferenceNumber", r.getLearnerReferenceNumber());
+            map.put("requestType", r.getRequestType());
+            map.put("requesterEmail", r.getRequesterEmail());
+            map.put("requesterName", r.getRequesterName());
+            map.put("status", r.getStatus());
+            map.put("submittedDate", r.getSubmittedAt());
+            map.put("ticketNumber", r.getTicketNumber());
+            requests.add(map);
         }
 
         Map<String, Object> stats = new HashMap<>();
@@ -92,48 +62,58 @@ public class DashboardController {
         return body;
     }
 
-    @GetMapping(value = "/request/nonexistent", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> nonExisting(@RequestHeader("Authorization") String auth) {
+    @GetMapping(value = "/request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> requestDetails(@RequestHeader("Authorization") String auth, @PathVariable String id) {
+        Optional<Form137Request> req = repository.findById(id);
+        if (req.isEmpty()) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("code", "REQUEST_NOT_FOUND");
+            body.put("error", "Request not found");
+            return ResponseEntity.status(404).body(body);
+        }
+        Form137Request r = req.get();
         Map<String, Object> body = new HashMap<>();
-        body.put("code", "REQUEST_NOT_FOUND");
-        body.put("error", "Request not found");
-        return ResponseEntity.status(404).body(body);
+        body.put("comments", r.getComments());
+        body.put("deliveryMethod", r.getDeliveryMethod());
+        body.put("estimatedCompletion", r.getEstimatedCompletion());
+        body.put("id", r.getId());
+        body.put("learnerName", r.getLearnerName());
+        body.put("learnerReferenceNumber", r.getLearnerReferenceNumber());
+        body.put("requestType", r.getRequestType());
+        body.put("requesterEmail", r.getRequesterEmail());
+        body.put("requesterName", r.getRequesterName());
+        body.put("status", r.getStatus());
+        body.put("submittedDate", r.getSubmittedAt());
+        body.put("ticketNumber", r.getTicketNumber());
+        return ResponseEntity.ok(body);
     }
 
-    @GetMapping(value = "/request/req_001", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> requestDetails(@RequestHeader("Authorization") String auth) {
-        Map<String, Object> comment = new HashMap<>();
-        comment.put("id", "comment_001");
-        comment.put("message", "Your request has been received");
-        comment.put("registrarName", "Ms. Santos");
-        comment.put("requiresResponse", false);
-        comment.put("timestamp", "2024-01-15T10:35:00Z");
-        comment.put("type", "info");
-
+    @PostMapping(value = "/request/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addComment(@RequestHeader("Authorization") String auth, @PathVariable String id, @RequestBody Map<String, String> input) {
+        Optional<Form137Request> req = repository.findById(id);
+        if (req.isEmpty()) {
+            Map<String, Object> body = new HashMap<>();
+            body.put("code", "REQUEST_NOT_FOUND");
+            body.put("error", "Request not found");
+            return ResponseEntity.status(404).body(body);
+        }
+        Form137Request r = req.get();
+        if (r.getComments() == null) {
+            r.setComments(new java.util.ArrayList<>());
+        }
+        Comment c = new Comment();
+        c.setId("c" + System.currentTimeMillis());
+        c.setMessage(input.get("message"));
+        c.setTimestamp(java.time.Instant.now().toString());
+        c.setType("user-response");
+        r.getComments().add(c);
+        repository.save(r);
         Map<String, Object> body = new HashMap<>();
-        body.put("comments", List.of(comment));
-        body.put("deliveryMethod", "pickup");
-        body.put("estimatedCompletion", "2024-01-22T17:00:00Z");
-        body.put("id", "req_001");
-        body.put("learnerName", "Juan Dela Cruz");
-        body.put("learnerReferenceNumber", "123456789012");
-        body.put("requestType", "Original Copy");
-        body.put("requesterEmail", "maria@email.com");
-        body.put("requesterName", "Maria Dela Cruz");
-        body.put("status", "submitted");
-        body.put("submittedDate", "2024-01-15T10:30:00Z");
-        body.put("ticketNumber", "F137-2024-001");
-        return body;
-    }
-
-    @PostMapping(value = "/request/req_001/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> addComment(@RequestHeader("Authorization") String auth, @RequestBody Map<String, String> input) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("author", "Maria Dela Cruz");
-        body.put("id", "comment_002");
-        body.put("message", input.get("message"));
-        body.put("timestamp", "2024-01-16T14:30:00Z");
-        body.put("type", "user-response");
+        body.put("author", r.getRequesterName());
+        body.put("id", c.getId());
+        body.put("message", c.getMessage());
+        body.put("timestamp", c.getTimestamp());
+        body.put("type", c.getType());
         return ResponseEntity.status(201).body(body);
     }
 }
