@@ -14,15 +14,18 @@ spec:
     spec:
       containers:
         - name: form137-api
-          image: REPLACE_WITH_YOUR_REGISTRY/form137-api:latest
+          image: jasoncalalang/form137-api-requestor:1
           ports:
             - containerPort: 8080
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SPRING_DATA_MONGODB_URI
-              value: "mongodb+srv://user:password@cluster.mongodb.net/form137?retryWrites=true&w=majority"
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_URI
             - name: SPRING_DATA_MONGODB_DATABASE
               value: form137
             - name: AUTH0_ISSUER_URI
-              value: "https://YOUR_AUTH0_DOMAIN/"
+              value: "https://jasoncalalang.auth0.com/"

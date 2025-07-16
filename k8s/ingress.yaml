@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: form137-api-ingress
+spec:
+  ingressClassName: public-iks-k8s-nginx
+  tls:
+    - hosts:
+        - f137-api.jason-test1-2d3fb824a69ea5c326974e87bbe5c52a-0000.jp-tok.containers.appdomain.cloud
+      secretName: jason-test1-2d3fb824a69ea5c326974e87bbe5c52a-0000
+  rules:
+    - host: f137-api.jason-test1-2d3fb824a69ea5c326974e87bbe5c52a-0000.jp-tok.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: form137-api
+                port:
+                  number: 8080
+
