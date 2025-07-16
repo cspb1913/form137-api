@@ -7,10 +7,10 @@ import java.util.Optional;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +27,8 @@ public class Form137Controller {
         this.repository = repository;
     }
 
-    @PostMapping(value = "/submit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> submit(@ModelAttribute Form137Request request) {
+    @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> submit(@RequestBody Form137Request request) {
         Map<String, Object> errors = new HashMap<>();
         if (request.getLearnerReferenceNumber() == null || !request.getLearnerReferenceNumber().matches("\\d{12}")) {
             errors.put("learnerReferenceNumber", new String[]{"Must be exactly 12 digits"});

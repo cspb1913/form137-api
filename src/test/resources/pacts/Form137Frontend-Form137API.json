@@ -10,7 +10,7 @@
         "method": "POST",
         "path": "/api/form137/submit",
         "headers": {
-          "Content-Type": "multipart/form-data; boundary=----formdata-pact-boundary"
+          "Content-Type": "application/json"
         },
         "body": {
           "learnerReferenceNumber": "123456789012",
@@ -49,7 +49,7 @@
         "method": "POST",
         "path": "/api/form137/submit",
         "headers": {
-          "Content-Type": "multipart/form-data; boundary=----formdata-pact-boundary"
+          "Content-Type": "application/json"
         },
         "body": {
           "learnerReferenceNumber": "987654321098",
@@ -87,7 +87,7 @@
         "method": "POST",
         "path": "/api/form137/submit",
         "headers": {
-          "Content-Type": "multipart/form-data; boundary=----formdata-pact-boundary"
+          "Content-Type": "application/json"
         },
         "body": {
           "learnerReferenceNumber": "12345",

@@ -98,15 +98,17 @@ public class DashboardController {
             return ResponseEntity.status(404).body(body);
         }
         Form137Request r = req.get();
-        if (r.getComments() == null) {
-            r.setComments(new java.util.ArrayList<>());
+        java.util.List<Comment> comments = new java.util.ArrayList<>();
+        if (r.getComments() != null) {
+            comments.addAll(r.getComments());
         }
         Comment c = new Comment();
         c.setId("c" + System.currentTimeMillis());
         c.setMessage(input.get("message"));
         c.setTimestamp(java.time.Instant.now().toString());
         c.setType("user-response");
-        r.getComments().add(c);
+        comments.add(c);
+        r.setComments(comments);
         repository.save(r);
         Map<String, Object> body = new HashMap<>();
         body.put("author", r.getRequesterName());

@@ -2,6 +2,8 @@ package ph.edu.cspb.form137.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -39,6 +41,7 @@ public class Form137Request {
     private String learnerName;
     private String requesterName;
     private String relationshipToLearner;
+    @JsonProperty("emailAddress")
     private String requesterEmail;
     private String mobileNumber;
 
