@@ -1,6 +1,29 @@
 package ph.edu.cspb.form137.model;
 
+import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+/**
+ * MongoDB entity representing a Form 137 request submission.
+ * <p>
+ * The connection details are provided via the {@code SPRING_DATA_MONGODB_URI}
+ * and {@code SPRING_DATA_MONGODB_DATABASE} environment variables.
+ * </p>
+ */
+@Document(collection = "form137_requests")
 public class Form137Request {
+
+    @Id
+    private String id;
+    private String ticketNumber;
+    private String status;
+    private String submittedAt;
+    private String updatedAt;
+    private String notes;
+    private List<Comment> comments;
+
     private String learnerReferenceNumber;
     private String firstName;
     private String middleName;
@@ -11,12 +34,35 @@ public class Form137Request {
     private String previousSchool;
     private String purposeOfRequest;
     private String deliveryMethod;
+    private String estimatedCompletion;
+    private String requestType;
+    private String learnerName;
     private String requesterName;
     private String relationshipToLearner;
-    private String emailAddress;
+    private String requesterEmail;
     private String mobileNumber;
 
     // getters and setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getTicketNumber() { return ticketNumber; }
+    public void setTicketNumber(String ticketNumber) { this.ticketNumber = ticketNumber; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getSubmittedAt() { return submittedAt; }
+    public void setSubmittedAt(String submittedAt) { this.submittedAt = submittedAt; }
+
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public List<Comment> getComments() { return comments; }
+    public void setComments(List<Comment> comments) { this.comments = comments; }
     public String getLearnerReferenceNumber() { return learnerReferenceNumber; }
     public void setLearnerReferenceNumber(String learnerReferenceNumber) { this.learnerReferenceNumber = learnerReferenceNumber; }
     public String getFirstName() { return firstName; }
@@ -37,12 +83,18 @@ public class Form137Request {
     public void setPurposeOfRequest(String purposeOfRequest) { this.purposeOfRequest = purposeOfRequest; }
     public String getDeliveryMethod() { return deliveryMethod; }
     public void setDeliveryMethod(String deliveryMethod) { this.deliveryMethod = deliveryMethod; }
+    public String getEstimatedCompletion() { return estimatedCompletion; }
+    public void setEstimatedCompletion(String estimatedCompletion) { this.estimatedCompletion = estimatedCompletion; }
+    public String getRequestType() { return requestType; }
+    public void setRequestType(String requestType) { this.requestType = requestType; }
+    public String getLearnerName() { return learnerName; }
+    public void setLearnerName(String learnerName) { this.learnerName = learnerName; }
     public String getRequesterName() { return requesterName; }
     public void setRequesterName(String requesterName) { this.requesterName = requesterName; }
     public String getRelationshipToLearner() { return relationshipToLearner; }
     public void setRelationshipToLearner(String relationshipToLearner) { this.relationshipToLearner = relationshipToLearner; }
-    public String getEmailAddress() { return emailAddress; }
-    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
+    public String getRequesterEmail() { return requesterEmail; }
+    public void setRequesterEmail(String requesterEmail) { this.requesterEmail = requesterEmail; }
     public String getMobileNumber() { return mobileNumber; }
     public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
 }
