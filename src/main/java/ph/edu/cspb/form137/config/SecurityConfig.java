@@ -22,11 +22,13 @@ public class SecurityConfig {
                     .requestMatchers("/api/health/**").permitAll()
                     .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .cors(Customizer.withDefaults());
         } else {
             http
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults());
         }
         return http.build();
     }
