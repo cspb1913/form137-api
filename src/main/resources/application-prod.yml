@@ -10,9 +10,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${AUTH0_ISSUER_URI}
+          audiences: ${AUTH0_AUDIENCE}
 server:
   port: 8080
 auth:
   enabled: true
-auth0:
-  audience: ${AUTH0_AUDIENCE}

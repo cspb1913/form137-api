@@ -14,8 +14,6 @@ public class SecurityConfig {
     @Value("${auth.enabled:false}")
     private boolean authEnabled;
 
-    @Value("${auth0.audience:}")
-    private String audience;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -26,11 +24,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                    .jwt(jwt -> jwt
-                        .audience(audience)
-                        .and()
-                        .jwt(Customizer.withDefaults())
-                    )
+                    .jwt(Customizer.withDefaults())
                 )
                 .cors(Customizer.withDefaults());
         } else {
