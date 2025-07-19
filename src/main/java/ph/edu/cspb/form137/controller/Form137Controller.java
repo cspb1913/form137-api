@@ -17,11 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 @RequestMapping("/api/form137")
 public class Form137Controller {
 
     private final Form137RequestRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(Form137Controller.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public Form137Controller(Form137RequestRepository repository) {
         this.repository = repository;
@@ -29,6 +35,11 @@ public class Form137Controller {
 
     @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> submit(@RequestBody Form137Request request) {
+        try {
+            logger.info("Incoming payload: {}", objectMapper.writeValueAsString(request));
+        } catch (Exception e) {
+            logger.warn("Failed to serialize incoming payload", e);
+        }
         Map<String, Object> errors = new HashMap<>();
         if (request.getLearnerReferenceNumber() == null || !request.getLearnerReferenceNumber().matches("\\d{12}")) {
             errors.put("learnerReferenceNumber", new String[]{"Must be exactly 12 digits"});
@@ -45,6 +56,11 @@ public class Form137Controller {
             body.put("message", "Form validation failed");
             body.put("statusCode", 400);
             body.put("details", errors);
+            try {
+                logger.info("Outgoing payload: {}", objectMapper.writeValueAsString(body));
+            } catch (Exception e) {
+                logger.warn("Failed to serialize outgoing payload", e);
+            }
             return ResponseEntity.status(400).body(body);
         }
 
@@ -60,6 +76,11 @@ public class Form137Controller {
         body.put("ticketNumber", saved.getTicketNumber());
         body.put("message", "Form 137 request submitted successfully");
         body.put("submittedAt", saved.getSubmittedAt());
+        try {
+            logger.info("Outgoing payload: {}", objectMapper.writeValueAsString(body));
+        } catch (Exception e) {
+            logger.warn("Failed to serialize outgoing payload", e);
+        }
         return ResponseEntity.status(201).body(body);
     }
 
