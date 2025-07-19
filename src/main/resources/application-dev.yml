@@ -2,6 +2,9 @@ spring:
   data:
     mongodb:
       database: demo-dev   # logical DB name inside embedded server
+  servlet:
+    multipart:
+      enabled: false  # Disable multipart support completely
 server:
   port: 8080
 de:

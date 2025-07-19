@@ -5,6 +5,9 @@ spring:
       database: ${SPRING_DATA_MONGODB_DATABASE}
   autoconfigure:
     exclude: de.flapdoodle.embed.mongo.spring.autoconfigure.EmbeddedMongoAutoConfiguration
+  servlet:
+    multipart:
+      enabled: false  # Disable multipart support completely
   security:
     oauth2:
       resourceserver:
