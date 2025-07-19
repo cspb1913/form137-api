@@ -19,11 +19,17 @@ import ph.edu.cspb.form137.model.Comment;
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RestController
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
     private final Form137RequestRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public DashboardController(Form137RequestRepository repository) {
         this.repository = repository;
@@ -31,6 +37,7 @@ public class DashboardController {
 
     @GetMapping(value = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> listRequests(@RequestHeader("Authorization") String auth) {
+        logger.info("listRequests called with Authorization: {}", auth);
         List<Form137Request> all = repository.findAll();
         List<Map<String, Object>> requests = new java.util.ArrayList<>();
         for (Form137Request r : all) {
@@ -59,16 +66,27 @@ public class DashboardController {
         Map<String, Object> body = new HashMap<>();
         body.put("requests", requests);
         body.put("statistics", stats);
+        try {
+            logger.info("listRequests response: {}", objectMapper.writeValueAsString(body));
+        } catch (Exception e) {
+            logger.warn("Failed to serialize listRequests response", e);
+        }
         return body;
     }
 
     @GetMapping(value = "/request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> requestDetails(@RequestHeader("Authorization") String auth, @PathVariable String id) {
+        logger.info("requestDetails called with Authorization: {}, id: {}", auth, id);
         Optional<Form137Request> req = repository.findById(id);
         if (req.isEmpty()) {
             Map<String, Object> body = new HashMap<>();
             body.put("code", "REQUEST_NOT_FOUND");
             body.put("error", "Request not found");
+            try {
+                logger.info("requestDetails response (not found): {}", objectMapper.writeValueAsString(body));
+            } catch (Exception e) {
+                logger.warn("Failed to serialize requestDetails not found response", e);
+            }
             return ResponseEntity.status(404).body(body);
         }
         Form137Request r = req.get();
@@ -85,6 +103,11 @@ public class DashboardController {
         body.put("status", r.getStatus());
         body.put("submittedDate", r.getSubmittedAt());
         body.put("ticketNumber", r.getTicketNumber());
+        try {
+            logger.info("requestDetails response: {}", objectMapper.writeValueAsString(body));
+        } catch (Exception e) {
+            logger.warn("Failed to serialize requestDetails response", e);
+        }
         return ResponseEntity.ok(body);
     }
 
