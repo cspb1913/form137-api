@@ -14,3 +14,5 @@ server:
   port: 8080
 auth:
   enabled: true
+auth0:
+  audience: ${AUTH0_AUDIENCE}
