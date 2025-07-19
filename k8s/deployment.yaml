@@ -35,3 +35,9 @@ spec:
                 configMapKeyRef:
                   name: form137-cm
                   key: AUTH0_ISSUER_URI
+
+            - name: AUTH0_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: form137-cm
+                  key: AUTH0_AUDIENCE
