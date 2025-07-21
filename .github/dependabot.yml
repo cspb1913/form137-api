@@ -11,7 +11,7 @@ updates:
     reviewers:
       - "jasoncalalang"
     assignees:
-      - "jasoncalalang"
+      - "copilot"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -30,7 +30,7 @@ updates:
     reviewers:
       - "jasoncalalang"
     assignees:
-      - "jasoncalalang"
+      - "copilot"
     commit-message:
       prefix: "ci"
       include: "scope"
