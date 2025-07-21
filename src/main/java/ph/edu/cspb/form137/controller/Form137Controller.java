@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.util.TicketNumberGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +145,7 @@ public class Form137Controller {
         }
 
         if (request.getTicketNumber() == null) {
-            request.setTicketNumber("REQ-" + Instant.now().toString().replaceAll("\\D", "").substring(0, 5));
+            request.setTicketNumber(TicketNumberGenerator.generateTicketNumber());
         }
         request.setSubmittedAt(Instant.now().toString());
         request.setStatus("processing");

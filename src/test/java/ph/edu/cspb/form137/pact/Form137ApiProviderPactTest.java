@@ -52,7 +52,7 @@ class Form137ApiProviderPactTest {
     @State("API is available for form submission")
     public void apiAvailableForSubmission() {
         Form137Request saved = new Form137Request();
-        saved.setTicketNumber("REQ-2025-00123");
+        saved.setTicketNumber("REQ-0111202512345");
         saved.setSubmittedAt("2025-01-11T21:52:11.000Z");
         when(repository.save(any(Form137Request.class))).thenReturn(saved);
     }
@@ -60,7 +60,7 @@ class Form137ApiProviderPactTest {
     @State("API is available for self-requester form submission")
     public void apiAvailableForSelfSubmission() {
         Form137Request saved = new Form137Request();
-        saved.setTicketNumber("REQ-2025-00124");
+        saved.setTicketNumber("REQ-0111202512346");
         saved.setSubmittedAt("2025-01-11T21:52:11.000Z");
         when(repository.save(any(Form137Request.class))).thenReturn(saved);
     }
@@ -70,19 +70,19 @@ class Form137ApiProviderPactTest {
         // no repository interaction needed
     }
 
-    @State("A form submission exists with ticket number REQ-2025-00123")
+    @State("A form submission exists with ticket number REQ-0111202512345")
     public void submissionExists() {
         Form137Request req = new Form137Request();
-        req.setTicketNumber("REQ-2025-00123");
+        req.setTicketNumber("REQ-0111202512345");
         req.setStatus("processing");
         req.setSubmittedAt("2025-01-11T21:52:11.000Z");
         req.setUpdatedAt("2025-01-12T09:30:00.000Z");
         req.setNotes("Documents under review");
-        when(repository.findByTicketNumber("REQ-2025-00123")).thenReturn(java.util.Optional.of(req));
+        when(repository.findByTicketNumber("REQ-0111202512345")).thenReturn(java.util.Optional.of(req));
     }
 
-    @State("No form submission exists with ticket number REQ-2025-99999")
+    @State("No form submission exists with ticket number REQ-0111202599999")
     public void submissionDoesNotExist() {
-        when(repository.findByTicketNumber("REQ-2025-99999")).thenReturn(java.util.Optional.empty());
+        when(repository.findByTicketNumber("REQ-0111202599999")).thenReturn(java.util.Optional.empty());
     }
 }

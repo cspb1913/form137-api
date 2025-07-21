@@ -36,7 +36,7 @@
         },
         "body": {
           "success": true,
-          "ticketNumber": "REQ-2025-00123",
+          "ticketNumber": "REQ-0111202512345",
           "message": "Form 137 request submitted successfully",
           "submittedAt": "2025-01-11T21:52:11.000Z"
         }
@@ -74,7 +74,7 @@
         },
         "body": {
           "success": true,
-          "ticketNumber": "REQ-2025-00124",
+          "ticketNumber": "REQ-0111202512346",
           "message": "Form 137 request submitted successfully",
           "submittedAt": "2025-01-11T21:52:11.000Z"
         }
@@ -124,10 +124,10 @@
     },
     {
       "description": "a request for submission status",
-      "providerState": "A form submission exists with ticket number REQ-2025-00123",
+      "providerState": "A form submission exists with ticket number REQ-0111202512345",
       "request": {
         "method": "GET",
-        "path": "/api/form137/status/REQ-2025-00123",
+        "path": "/api/form137/status/REQ-0111202512345",
         "headers": {
           "Accept": "application/json"
         }
@@ -138,7 +138,7 @@
           "Content-Type": "application/json"
         },
         "body": {
-          "ticketNumber": "REQ-2025-00123",
+          "ticketNumber": "REQ-0111202512345",
           "status": "processing",
           "submittedAt": "2025-01-11T21:52:11.000Z",
           "updatedAt": "2025-01-12T09:30:00.000Z",
@@ -148,10 +148,10 @@
     },
     {
       "description": "a request for non-existent submission status",
-      "providerState": "No form submission exists with ticket number REQ-2025-99999",
+      "providerState": "No form submission exists with ticket number REQ-0111202599999",
       "request": {
         "method": "GET",
-        "path": "/api/form137/status/REQ-2025-99999",
+        "path": "/api/form137/status/REQ-0111202599999",
         "headers": {
           "Accept": "application/json"
         }
