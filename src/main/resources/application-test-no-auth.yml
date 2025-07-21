@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: test-no-auth
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test
+  servlet:
+    multipart:
+      enabled: false
+server:
+  port: 8080
+auth:
+  enabled: false
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /api/swagger
+    operationsSorter: method
+logging:
+  level:
+    de.flapdoodle.embed.mongo: ERROR
+    org.springframework.data.mongodb: ERROR

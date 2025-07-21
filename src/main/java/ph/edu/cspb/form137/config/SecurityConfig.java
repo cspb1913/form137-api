@@ -21,6 +21,10 @@ public class SecurityConfig {
             http
                 .authorizeHttpRequests(authz -> authz
                     .requestMatchers("/api/health/**").permitAll()
+                    .requestMatchers("/api/swagger/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**").permitAll()
+                    .requestMatchers("/swagger-ui/**").permitAll()
+                    .requestMatchers("/swagger-ui.html").permitAll()
                     .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
