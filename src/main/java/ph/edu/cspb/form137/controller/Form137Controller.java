@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.repository.CommentRepository;
+import ph.edu.cspb.form137.model.Comment;
 import ph.edu.cspb.form137.util.TicketNumberGenerator;
 
 import org.slf4j.Logger;
@@ -37,11 +39,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class Form137Controller {
 
     private final Form137RequestRepository repository;
+    private final CommentRepository commentRepository;
     private static final Logger logger = LoggerFactory.getLogger(Form137Controller.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Form137Controller(Form137RequestRepository repository) {
+    public Form137Controller(Form137RequestRepository repository, CommentRepository commentRepository) {
         this.repository = repository;
+        this.commentRepository = commentRepository;
     }
 
     @Operation(
@@ -150,6 +154,17 @@ public class Form137Controller {
         request.setSubmittedAt(Instant.now().toString());
         request.setStatus("processing");
         Form137Request saved = repository.save(request);
+
+        // Create initial comment in the separate comments collection
+        Comment initialComment = new Comment();
+        initialComment.setId("c" + System.currentTimeMillis());
+        initialComment.setRequestId(saved.getId());
+        initialComment.setMessage("Form 137 request has been submitted and is being processed");
+        initialComment.setTimestamp(Instant.now().toString());
+        initialComment.setType("system");
+        initialComment.setRegistrarName("System");
+        initialComment.setRequiresResponse(false);
+        commentRepository.save(initialComment);
 
         Map<String, Object> body = new HashMap<>();
         body.put("success", true);

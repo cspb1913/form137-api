@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.repository.CommentRepository;
 
 /**
  * Basic context load test.
@@ -25,6 +26,9 @@ class Form137ApiApplicationTests {
 
     @MockBean
     Form137RequestRepository repository;
+
+    @MockBean
+    CommentRepository commentRepository;
 
     @Test
     void contextLoads() {

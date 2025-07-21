@@ -1,7 +1,18 @@
 package ph.edu.cspb.form137.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+/**
+ * MongoDB entity representing a comment for a Form 137 request.
+ * Comments are stored in a separate collection (form137-comments) and linked
+ * to Form137Request documents via the requestId field.
+ */
+@Document(collection = "form137-comments")
 public class Comment {
+    @Id
     private String id;
+    private String requestId; // Links to Form137Request.id
     private String message;
     private String registrarName;
     private boolean requiresResponse;
@@ -10,6 +21,9 @@ public class Comment {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public String getRequestId() { return requestId; }
+    public void setRequestId(String requestId) { this.requestId = requestId; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }

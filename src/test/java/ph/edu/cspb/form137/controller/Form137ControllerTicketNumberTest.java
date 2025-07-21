@@ -3,6 +3,7 @@ package ph.edu.cspb.form137.controller;
 import org.junit.jupiter.api.Test;
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.repository.CommentRepository;
 import ph.edu.cspb.form137.util.TicketNumberGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,9 +16,10 @@ class Form137ControllerTicketNumberTest {
     void testTicketNumberGenerationInController() {
         // Create a mock repository
         Form137RequestRepository mockRepository = mock(Form137RequestRepository.class);
+        CommentRepository mockCommentRepository = mock(CommentRepository.class);
         
-        // Create controller with mock repository
-        Form137Controller controller = new Form137Controller(mockRepository);
+        // Create controller with mock repositories
+        Form137Controller controller = new Form137Controller(mockRepository, mockCommentRepository);
         
         // Create test request with minimal required fields
         Form137Request request = new Form137Request();
@@ -25,8 +27,12 @@ class Form137ControllerTicketNumberTest {
         request.setFirstName("Juan");
         request.setRequesterEmail("juan@example.com");
         
-        // Mock the repository save to return the same request
-        when(mockRepository.save(any(Form137Request.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Mock the repository save to return the same request with an ID
+        when(mockRepository.save(any(Form137Request.class))).thenAnswer(invocation -> {
+            Form137Request req = invocation.getArgument(0);
+            req.setId("test-id-123"); // Set an ID for the saved request
+            return req;
+        });
         
         // Call the submit method
         var response = controller.submit(request);
@@ -49,6 +55,9 @@ class Form137ControllerTicketNumberTest {
         assertEquals(true, responseBody.get("success"));
         assertEquals(request.getTicketNumber(), responseBody.get("ticketNumber"));
         assertEquals("Form 137 request submitted successfully", responseBody.get("message"));
+        
+        // Verify that a comment was created (should be called once)
+        verify(mockCommentRepository, times(1)).save(any());
     }
     
     @Test
