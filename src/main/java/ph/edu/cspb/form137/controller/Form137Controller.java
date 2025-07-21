@@ -21,8 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/form137")
+@Tag(name = "Form 137 Requests", description = "Operations for submitting and tracking Form 137 transcript requests")
 public class Form137Controller {
 
     private final Form137RequestRepository repository;
@@ -33,8 +43,77 @@ public class Form137Controller {
         this.repository = repository;
     }
 
+    @Operation(
+        summary = "Submit Form 137 Request", 
+        description = "Submit a new Form 137 transcript request with student and requester information"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Request submitted successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Map.class),
+                examples = @ExampleObject(value = """
+                    {
+                        "success": true,
+                        "ticketNumber": "REQ-12345",
+                        "message": "Form 137 request submitted successfully",
+                        "submittedAt": "2024-01-01T10:00:00Z"
+                    }
+                    """)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400", 
+            description = "Validation error",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "error": "Validation Error",
+                        "message": "Form validation failed",
+                        "statusCode": 400,
+                        "details": {
+                            "learnerReferenceNumber": ["Must be exactly 12 digits"],
+                            "firstName": ["First name is required"],
+                            "emailAddress": ["Please enter a valid email address"]
+                        }
+                    }
+                    """)
+            )
+        )
+    })
     @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> submit(@RequestBody Form137Request request) {
+    public ResponseEntity<Map<String, Object>> submit(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "Form 137 request details",
+                required = true,
+                content = @Content(
+                    schema = @Schema(implementation = Form137Request.class),
+                    examples = @ExampleObject(value = """
+                        {
+                            "learnerReferenceNumber": "123456789012",
+                            "firstName": "Juan",
+                            "middleName": "Santos",
+                            "lastName": "Dela Cruz",
+                            "dateOfBirth": "2000-01-01",
+                            "lastGradeLevel": "Grade 12",
+                            "lastSchoolYear": "2018-2019",
+                            "previousSchool": "CSPB High School",
+                            "purposeOfRequest": "College admission",
+                            "deliveryMethod": "Email",
+                            "requestType": "Original",
+                            "learnerName": "Juan Santos Dela Cruz",
+                            "requesterName": "Maria Dela Cruz",
+                            "relationshipToLearner": "Mother",
+                            "emailAddress": "maria@email.com",
+                            "mobileNumber": "09123456789"
+                        }
+                        """)
+                )
+            )
+            @RequestBody Form137Request request) {
         try {
             logger.info("Incoming payload: {}", objectMapper.writeValueAsString(request));
         } catch (Exception e) {
@@ -84,8 +163,46 @@ public class Form137Controller {
         return ResponseEntity.status(201).body(body);
     }
 
+    @Operation(
+        summary = "Get Request Status", 
+        description = "Get the current status of a Form 137 request using the ticket number"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Request status retrieved successfully",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "ticketNumber": "REQ-12345",
+                        "status": "processing",
+                        "submittedAt": "2024-01-01T10:00:00Z",
+                        "updatedAt": "2024-01-01T11:00:00Z",
+                        "notes": "Request is being processed"
+                    }
+                    """)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Request not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "error": "Not Found",
+                        "message": "Submission not found",
+                        "statusCode": 404
+                    }
+                    """)
+            )
+        )
+    })
     @GetMapping(value = "/status/{ticketNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> status(@PathVariable String ticketNumber) {
+    public ResponseEntity<Map<String, Object>> status(
+            @Parameter(description = "Ticket number to check status for", required = true, example = "REQ-12345")
+            @PathVariable String ticketNumber) {
         Optional<Form137Request> result = repository.findByTicketNumber(ticketNumber);
         if (result.isEmpty()) {
             Map<String, Object> body = new HashMap<>();

@@ -23,8 +23,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/dashboard")
+@Tag(name = "Dashboard", description = "Administrative dashboard operations for managing Form 137 requests")
+@SecurityRequirement(name = "bearerAuth")
 public class DashboardController {
 
     private final Form137RequestRepository repository;
@@ -35,8 +47,45 @@ public class DashboardController {
         this.repository = repository;
     }
 
+    @Operation(
+        summary = "List All Requests", 
+        description = "Get a list of all Form 137 requests with statistics"
+    )
+    @ApiResponse(
+        responseCode = "200", 
+        description = "Requests retrieved successfully",
+        content = @Content(
+            mediaType = "application/json",
+            examples = @ExampleObject(value = """
+                {
+                    "requests": [
+                        {
+                            "id": "507f1f77bcf86cd799439011",
+                            "ticketNumber": "REQ-12345",
+                            "learnerName": "Juan Dela Cruz",
+                            "learnerReferenceNumber": "123456789012",
+                            "status": "processing",
+                            "submittedDate": "2024-01-01T10:00:00Z",
+                            "requesterName": "Maria Dela Cruz",
+                            "requesterEmail": "maria@email.com",
+                            "requestType": "Original",
+                            "deliveryMethod": "Email"
+                        }
+                    ],
+                    "statistics": {
+                        "totalRequests": 5,
+                        "pendingRequests": 2,
+                        "completedRequests": 3,
+                        "averageProcessingTime": 7
+                    }
+                }
+                """)
+        )
+    )
     @GetMapping(value = "/requests", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> listRequests(@RequestHeader("Authorization") String auth) {
+    public Map<String, Object> listRequests(
+            @Parameter(description = "Authorization header with Bearer token", required = true, example = "Bearer your-jwt-token")
+            @RequestHeader("Authorization") String auth) {
         logger.info("listRequests called with Authorization: {}", auth);
         List<Form137Request> all = repository.findAll();
         List<Map<String, Object>> requests = new java.util.ArrayList<>();
@@ -74,8 +123,53 @@ public class DashboardController {
         return body;
     }
 
+    @Operation(
+        summary = "Get Request Details", 
+        description = "Get detailed information about a specific Form 137 request"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200", 
+            description = "Request details retrieved successfully",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "id": "507f1f77bcf86cd799439011",
+                        "ticketNumber": "REQ-12345",
+                        "learnerName": "Juan Dela Cruz",
+                        "learnerReferenceNumber": "123456789012",
+                        "status": "processing",
+                        "submittedDate": "2024-01-01T10:00:00Z",
+                        "requesterName": "Maria Dela Cruz",
+                        "requesterEmail": "maria@email.com",
+                        "requestType": "Original",
+                        "deliveryMethod": "Email",
+                        "comments": []
+                    }
+                    """)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Request not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "code": "REQUEST_NOT_FOUND",
+                        "error": "Request not found"
+                    }
+                    """)
+            )
+        )
+    })
     @GetMapping(value = "/request/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> requestDetails(@RequestHeader("Authorization") String auth, @PathVariable String id) {
+    public ResponseEntity<?> requestDetails(
+            @Parameter(description = "Authorization header with Bearer token", required = true, example = "Bearer your-jwt-token")
+            @RequestHeader("Authorization") String auth, 
+            @Parameter(description = "Request ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id) {
         logger.info("requestDetails called with Authorization: {}, id: {}", auth, id);
         Optional<Form137Request> req = repository.findById(id);
         if (req.isEmpty()) {
@@ -111,8 +205,60 @@ public class DashboardController {
         return ResponseEntity.ok(body);
     }
 
+    @Operation(
+        summary = "Add Comment to Request", 
+        description = "Add a comment or note to a specific Form 137 request"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201", 
+            description = "Comment added successfully",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "id": "c1640995200000",
+                        "message": "Additional documentation required",
+                        "timestamp": "2024-01-01T12:00:00Z",
+                        "type": "user-response",
+                        "author": "Maria Dela Cruz"
+                    }
+                    """)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404", 
+            description = "Request not found",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = """
+                    {
+                        "code": "REQUEST_NOT_FOUND",
+                        "error": "Request not found"
+                    }
+                    """)
+            )
+        )
+    })
     @PostMapping(value = "/request/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addComment(@RequestHeader("Authorization") String auth, @PathVariable String id, @RequestBody Map<String, String> input) {
+    public ResponseEntity<?> addComment(
+            @Parameter(description = "Authorization header with Bearer token", required = true, example = "Bearer your-jwt-token")
+            @RequestHeader("Authorization") String auth, 
+            @Parameter(description = "Request ID", required = true, example = "507f1f77bcf86cd799439011")
+            @PathVariable String id, 
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                description = "Comment to add",
+                required = true,
+                content = @Content(
+                    schema = @Schema(implementation = Map.class),
+                    examples = @ExampleObject(value = """
+                        {
+                            "message": "Additional documentation required"
+                        }
+                        """)
+                )
+            )
+            @RequestBody Map<String, String> input) {
         Optional<Form137Request> req = repository.findById(id);
         if (req.isEmpty()) {
             Map<String, Object> body = new HashMap<>();
