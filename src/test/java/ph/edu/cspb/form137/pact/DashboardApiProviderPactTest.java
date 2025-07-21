@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import ph.edu.cspb.form137.model.Comment;
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.repository.CommentRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
@@ -38,6 +39,9 @@ class DashboardApiProviderPactTest {
 
     @MockBean
     Form137RequestRepository repository;
+
+    @MockBean
+    CommentRepository commentRepository;
 
     @BeforeEach
     void before(PactVerificationContext context) {
@@ -72,10 +76,14 @@ class DashboardApiProviderPactTest {
         req.setRequestType("Original Copy");
         req.setRequesterEmail("maria@email.com");
         req.setRequesterName("Maria Dela Cruz");
-        req.setComments(java.util.List.of(comment));
+        // Remove the comments field - we'll mock the separate collection instead
 
         when(repository.findAll()).thenReturn(java.util.List.of(req));
         when(repository.findById("req_001")).thenReturn(java.util.Optional.of(req));
+        
+        // Mock comment repository to return comments for this request
+        when(commentRepository.findByRequestIdOrderByTimestampAsc("req_001"))
+            .thenReturn(java.util.List.of(comment));
     }
 
     @State("request does not exist")

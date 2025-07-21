@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
+import ph.edu.cspb.form137.repository.CommentRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
@@ -37,6 +38,9 @@ class Form137ApiProviderPactTest {
 
     @MockBean
     Form137RequestRepository repository;
+
+    @MockBean
+    CommentRepository commentRepository;
 
     @BeforeEach
     void before(PactVerificationContext context) {

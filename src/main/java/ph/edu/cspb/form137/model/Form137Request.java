@@ -1,7 +1,5 @@
 package ph.edu.cspb.form137.model;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.data.annotation.Id;
@@ -9,6 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * MongoDB entity representing a Form 137 request submission.
+ * <p>
+ * Comments are now stored in a separate collection (form137-comments) and linked
+ * to this entity via the request ID.
+ * </p>
  * <p>
  * The connection details are provided via the {@code SPRING_DATA_MONGODB_URI}
  * and {@code SPRING_DATA_MONGODB_DATABASE} environment variables.
@@ -24,7 +26,7 @@ public class Form137Request {
     private String submittedAt;
     private String updatedAt;
     private String notes;
-    private List<Comment> comments;
+    // Comments are now stored in separate collection (form137-comments)
 
     private String learnerReferenceNumber;
     private String firstName;
@@ -64,8 +66,8 @@ public class Form137Request {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
-    public List<Comment> getComments() { return comments; }
-    public void setComments(List<Comment> comments) { this.comments = comments; }
+    // Comments are managed in separate collection via CommentRepository
+    
     public String getLearnerReferenceNumber() { return learnerReferenceNumber; }
     public void setLearnerReferenceNumber(String learnerReferenceNumber) { this.learnerReferenceNumber = learnerReferenceNumber; }
     public String getFirstName() { return firstName; }
