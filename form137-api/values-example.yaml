@@ -1,0 +1,84 @@
+# Example values for form137-api Helm chart
+# Copy this file to values-prod.yaml and customize for your environment
+
+# Number of replicas
+replicaCount: 2
+
+# Container image configuration  
+image:
+  repository: jasoncalalang/form137-api-requestor
+  pullPolicy: IfNotPresent
+  tag: "1"
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# Ingress configuration - customize for your domain
+ingress:
+  enabled: true
+  className: "public-iks-k8s-nginx"
+  annotations: {}
+  hosts:
+    - host: your-domain.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: your-tls-secret
+      hosts:
+        - your-domain.example.com
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Health probes
+livenessProbe:
+  httpGet:
+    path: /api/health/liveness
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  
+readinessProbe:
+  httpGet:
+    path: /api/health/readiness
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+# Application-specific configuration
+app:
+  springProfile: prod
+  mongodb:
+    database: "form137"
+  auth0:
+    issuerUri: "https://your-auth0-domain.auth0.com/"
+    audience: "your-auth0-audience"
+
+# ConfigMap data
+configMap:
+  create: true
+  data:
+    SPRING_DATA_MONGODB_DATABASE: "form137"
+    AUTH0_ISSUER_URI: "https://your-auth0-domain.auth0.com/"
+    AUTH0_AUDIENCE: "your-auth0-audience"
+
+# Secret data (base64 encoded values)
+secret:
+  create: true
+  data:
+    # Base64 encoded MongoDB URI
+    # Example: echo -n "mongodb+srv://user:pass@cluster.mongodb.net/form137?retryWrites=true&w=majority" | base64
+    MONGO_URI: "bW9uZ29kYitzcnY6Ly91c2VyOnBhc3NAY2x1c3Rlci5tb25nb2RiLm5ldC9mb3JtMTM3P3JldHJ5V3JpdGVzPXRydWUmdz1tYWpvcml0eQ=="
+
+# Container port
+containerPort: 8080

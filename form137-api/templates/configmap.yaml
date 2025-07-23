@@ -1,0 +1,12 @@
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "form137-api.fullname" . }}-configmap
+  labels:
+    {{- include "form137-api.labels" . | nindent 4 }}
+data:
+  SPRING_DATA_MONGODB_DATABASE: {{ .Values.configMap.data.SPRING_DATA_MONGODB_DATABASE | default .Values.app.mongodb.database | quote }}
+  AUTH0_ISSUER_URI: {{ .Values.configMap.data.AUTH0_ISSUER_URI | default .Values.app.auth0.issuerUri | quote }}
+  AUTH0_AUDIENCE: {{ .Values.configMap.data.AUTH0_AUDIENCE | default .Values.app.auth0.audience | quote }}
+{{- end }}
