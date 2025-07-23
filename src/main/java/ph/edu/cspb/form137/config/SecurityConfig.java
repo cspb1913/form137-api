@@ -34,7 +34,6 @@ public class SecurityConfig {
         } else {
             http
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults());
         }
         return http.build();
