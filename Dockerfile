@@ -8,7 +8,7 @@ COPY src ./src
 RUN ./gradlew bootJar --no-daemon --warning-mode all
 
 # Runtime image with Java 21 on Alpine 3.21
-FROM alpine:3.21
+FROM alpine:3.22
 RUN apk add --no-cache openjdk21-jre
 WORKDIR /app
 COPY --from=build /workspace/build/libs/*.jar app.jar
