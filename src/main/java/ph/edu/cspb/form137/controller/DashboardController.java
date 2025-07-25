@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ph.edu.cspb.form137.model.Comment;
 import ph.edu.cspb.form137.model.Form137Request;
+import ph.edu.cspb.form137.model.Form137RequestStatus;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
 import ph.edu.cspb.form137.repository.CommentRepository;
 
@@ -45,11 +46,6 @@ public class DashboardController {
     private final CommentRepository commentRepository;
     private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    
-    // Valid status values for Form 137 requests
-    private static final String[] VALID_STATUSES = {
-        "PENDING", "PROCESSING", "COMPLETED", "REJECTED", "CANCELLED"
-    };
 
     public DashboardController(Form137RequestRepository repository, CommentRepository commentRepository) {
         this.repository = repository;
@@ -389,7 +385,7 @@ public class DashboardController {
                 examples = @ExampleObject(value = """
                     {
                         "id": "507f1f77bcf86cd799439011",
-                        "status": "COMPLETED",
+                        "status": "completed",
                         "updatedAt": "2024-01-01T14:00:00Z",
                         "message": "Status updated successfully"
                     }
@@ -416,7 +412,7 @@ public class DashboardController {
                 examples = @ExampleObject(value = """
                     {
                         "error": "Status update failed.",
-                        "message": "Invalid status. Allowed values: PENDING, PROCESSING, COMPLETED, REJECTED, CANCELLED"
+                        "message": "Invalid status. Allowed values: pending, processing, completed, rejected, cancelled"
                     }
                     """)
             )
@@ -435,7 +431,7 @@ public class DashboardController {
                     schema = @Schema(implementation = Map.class),
                     examples = @ExampleObject(value = """
                         {
-                            "status": "COMPLETED"
+                            "status": "completed"
                         }
                         """)
                 )
@@ -457,7 +453,7 @@ public class DashboardController {
             return ResponseEntity.status(404).body(body);
         }
         
-        // Validate status value
+        // Validate status value using enum
         String newStatus = input.get("status");
         if (newStatus == null || newStatus.trim().isEmpty()) {
             Map<String, Object> body = new HashMap<>();
@@ -466,24 +462,18 @@ public class DashboardController {
             return ResponseEntity.status(422).body(body);
         }
         
-        // Normalize to uppercase for validation
-        newStatus = newStatus.trim().toUpperCase();
-        boolean validStatus = false;
-        for (String validStatusValue : VALID_STATUSES) {
-            if (validStatusValue.equals(newStatus)) {
-                validStatus = true;
-                break;
-            }
-        }
-        
-        if (!validStatus) {
+        Form137RequestStatus statusEnum;
+        try {
+            statusEnum = Form137RequestStatus.fromValue(newStatus);
+            newStatus = statusEnum.getValue(); // Use the normalized lowercase value
+        } catch (IllegalArgumentException e) {
             Map<String, Object> body = new HashMap<>();
             body.put("error", "Status update failed.");
-            body.put("message", "Invalid status. Allowed values: " + String.join(", ", VALID_STATUSES));
+            body.put("message", e.getMessage());
             try {
                 logger.info("updateRequestStatus response (invalid status): {}", objectMapper.writeValueAsString(body));
-            } catch (Exception e) {
-                logger.warn("Failed to serialize updateRequestStatus invalid status response", e);
+            } catch (Exception ex) {
+                logger.warn("Failed to serialize updateRequestStatus invalid status response", ex);
             }
             return ResponseEntity.status(422).body(body);
         }
