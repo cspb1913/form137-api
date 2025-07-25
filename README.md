@@ -7,7 +7,7 @@ This project provides mock endpoints for the Form 137 system. By default it runs
 The API uses a MongoDB database with separate collections for better scalability:
 
 - `form137_requests` - Main request documents
-- `form137-comments` - Comments linked to requests via `requestId`
+- `form137_comments` - Comments linked to requests via `requestId`
 
 Comments were moved to a separate collection to improve performance and provide better comment management capabilities. The API maintains backward compatibility by automatically fetching and merging comments in responses.
 

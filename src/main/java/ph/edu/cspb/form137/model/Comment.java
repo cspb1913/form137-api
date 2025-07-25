@@ -5,10 +5,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * MongoDB entity representing a comment for a Form 137 request.
- * Comments are stored in a separate collection (form137-comments) and linked
+ * Comments are stored in a separate collection (form137_comments) and linked
  * to Form137Request documents via the requestId field.
  */
-@Document(collection = "form137-comments")
+@Document(collection = "form137_comments")
 public class Comment {
     @Id
     private String id;
