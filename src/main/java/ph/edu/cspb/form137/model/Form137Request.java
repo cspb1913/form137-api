@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 /**
  * MongoDB entity representing a Form 137 request submission.
  * <p>
- * Comments are now stored in a separate collection (form137-comments) and linked
+ * Comments are now stored in a separate collection (form137_comments) and linked
  * to this entity via the request ID.
  * </p>
  * <p>
@@ -26,7 +26,7 @@ public class Form137Request {
     private String submittedAt;
     private String updatedAt;
     private String notes;
-    // Comments are now stored in separate collection (form137-comments)
+    // Comments are now stored in separate collection (form137_comments)
 
     private String learnerReferenceNumber;
     private String firstName;

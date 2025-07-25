@@ -29,7 +29,7 @@ The following API endpoints are documented:
 
 ## Comments Architecture
 
-Comments are now stored in a separate MongoDB collection (`form137-comments`) instead of being embedded within the request documents. This provides better scalability and allows for more advanced comment management features.
+Comments are now stored in a separate MongoDB collection (`form137_comments`) instead of being embedded within the request documents. This provides better scalability and allows for more advanced comment management features.
 
 - Comments are linked to requests via the `requestId` field
 - When a new Form 137 request is submitted, an initial system comment is automatically created
