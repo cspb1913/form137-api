@@ -11,7 +11,7 @@ updates:
     reviewers:
       - "jasoncalalang"
     assignees:
-      - "copilot"
+      - "jasoncalalang"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -24,16 +24,34 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-      day: "first-monday"
       time: "08:00"
     open-pull-requests-limit: 5
     reviewers:
       - "jasoncalalang"
     assignees:
-      - "copilot"
+      - "jasoncalalang"
     commit-message:
       prefix: "ci"
       include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
+
+  # Enable version updates for Docker base images
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "jasoncalalang"
+    assignees:
+      - "jasoncalalang"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
