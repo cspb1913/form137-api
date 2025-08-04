@@ -24,7 +24,7 @@ dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-security'
         implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-        implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.20.0' // ← embedded
+        implementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo.spring3x:4.21.0' // ← embedded
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testImplementation 'au.com.dius.pact.provider:junit5spring:4.6.17'
