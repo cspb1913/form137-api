@@ -117,7 +117,7 @@ The application now includes Helm charts for easier deployment and configuration
 
 2. **Configure your values**:
    ```bash
-   cp form137-api/values-example.yaml form137-api/values-prod.yaml
+   cp helm/values-example.yaml helm/values-prod.yaml
    # Edit values-prod.yaml with your specific configuration
    ```
 
@@ -134,10 +134,10 @@ The application now includes Helm charts for easier deployment and configuration
 4. **Deploy with Helm**:
    ```bash
    # Deploy to default namespace
-   helm install form137-api ./form137-api -f form137-api/values-prod.yaml
+   helm install form137-api ./helm -f helm/values-prod.yaml
    
    # Or deploy to specific namespace
-   helm install form137-api ./form137-api -n production -f form137-api/values-prod.yaml --create-namespace
+   helm install form137-api ./helm -n production -f helm/values-prod.yaml --create-namespace
    ```
 
 #### Helm Commands
@@ -147,7 +147,7 @@ The application now includes Helm charts for easier deployment and configuration
 helm status form137-api
 
 # Upgrade deployment
-helm upgrade form137-api ./form137-api -f form137-api/values-prod.yaml
+helm upgrade form137-api ./helm -f helm/values-prod.yaml
 
 # Rollback to previous version
 helm rollback form137-api
@@ -175,13 +175,15 @@ Key configuration values in `values.yaml`:
 
 ### Using Raw Kubernetes Manifests (Legacy)
 
-Kubernetes manifests are still available in the `k8s` directory for reference:
+Raw Kubernetes manifests have been removed in favor of Helm charts. For custom deployments, you can generate manifests from the Helm chart:
 
 ```bash
-kubectl apply -f k8s/deployment.yaml
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/ingress.yaml
+# Generate manifests without installing
+helm template form137-api ./helm -f helm/values-prod.yaml > generated-manifests.yaml
+
+# Apply generated manifests
+kubectl apply -f generated-manifests.yaml
 ```
 
-Note: You'll need to create the required ConfigMap and Secret manually when using raw manifests.
+Note: Using Helm charts is the recommended approach as it provides better configuration management and deployment lifecycle support.
  
