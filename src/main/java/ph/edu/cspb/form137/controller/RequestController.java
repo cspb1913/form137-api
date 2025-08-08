@@ -18,6 +18,7 @@ import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.model.Form137RequestStatus;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
 import ph.edu.cspb.form137.repository.CommentRepository;
+import ph.edu.cspb.form137.service.KafkaProducerService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +42,16 @@ public class RequestController {
 
     private final Form137RequestRepository repository;
     private final CommentRepository commentRepository;
+    private final KafkaProducerService kafkaProducerService;
     private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RequestController(Form137RequestRepository repository, CommentRepository commentRepository) {
+    public RequestController(Form137RequestRepository repository, 
+                           CommentRepository commentRepository,
+                           KafkaProducerService kafkaProducerService) {
         this.repository = repository;
         this.commentRepository = commentRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Operation(
@@ -175,6 +180,17 @@ public class RequestController {
             auditComment.setRegistrarName("System");
             auditComment.setRequiresResponse(false);
             commentRepository.save(auditComment);
+            
+            // Send email notification via Kafka for status update
+            try {
+                kafkaProducerService.sendStatusUpdateNotification(request, oldStatus, newStatus);
+                logger.info("Email notification sent for status update - Ticket: {}, Status: {} -> {}", 
+                    request.getTicketNumber(), oldStatus, newStatus);
+            } catch (Exception e) {
+                logger.error("Failed to send email notification for status update - Ticket: {}", 
+                    request.getTicketNumber(), e);
+                // Don't fail the status update if email notification fails
+            }
             
             // Success response
             Map<String, Object> body = new HashMap<>();

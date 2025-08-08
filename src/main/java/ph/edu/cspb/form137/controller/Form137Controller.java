@@ -18,6 +18,7 @@ import ph.edu.cspb.form137.model.Form137Request;
 import ph.edu.cspb.form137.repository.Form137RequestRepository;
 import ph.edu.cspb.form137.repository.CommentRepository;
 import ph.edu.cspb.form137.model.Comment;
+import ph.edu.cspb.form137.service.KafkaProducerService;
 import ph.edu.cspb.form137.util.TicketNumberGenerator;
 
 import org.slf4j.Logger;
@@ -40,12 +41,16 @@ public class Form137Controller {
 
     private final Form137RequestRepository repository;
     private final CommentRepository commentRepository;
+    private final KafkaProducerService kafkaProducerService;
     private static final Logger logger = LoggerFactory.getLogger(Form137Controller.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Form137Controller(Form137RequestRepository repository, CommentRepository commentRepository) {
+    public Form137Controller(Form137RequestRepository repository, 
+                           CommentRepository commentRepository,
+                           KafkaProducerService kafkaProducerService) {
         this.repository = repository;
         this.commentRepository = commentRepository;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @Operation(
@@ -154,6 +159,15 @@ public class Form137Controller {
         request.setSubmittedAt(Instant.now().toString());
         request.setStatus("processing");
         Form137Request saved = repository.save(request);
+        
+        // Send email notification via Kafka
+        try {
+            kafkaProducerService.sendSubmissionNotification(saved);
+            logger.info("Email notification sent for new submission - Ticket: {}", saved.getTicketNumber());
+        } catch (Exception e) {
+            logger.error("Failed to send email notification for ticket: {}", saved.getTicketNumber(), e);
+            // Don't fail the request if email notification fails
+        }
 
         // Create initial comment in the separate comments collection
         Comment initialComment = new Comment();

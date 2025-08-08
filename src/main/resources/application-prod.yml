@@ -14,7 +14,22 @@ spring:
         jwt:
           issuer-uri: ${AUTH0_ISSUER_URI}
           audiences: ${AUTH0_AUDIENCE}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka-external.kafka.svc.cluster.local:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      compression-type: snappy
+      retries: 3
+      batch-size: 16384
+      linger-ms: 10
+      buffer-memory: 33554432
 server:
   port: 8080
 auth:
   enabled: true
+kafka:
+  enabled: true  # Enable Kafka for production
+  topic:
+    email-notifications: form137-email-notifications
